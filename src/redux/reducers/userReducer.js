@@ -42,3 +42,26 @@ export const userReducer = createReducer(
 
     }
 );
+
+
+export const chatReducer = createReducer(
+    {},
+    {
+        // chatRequest: (state, action) => {
+        //     state.isLoading = true;
+        // },
+        currentChat: (state, action) => {
+            // state.isLoading = false;
+            state.uid = action.payload.userId;
+            state.name = action.payload.name;
+            state.photo = action.payload.photo;
+            state.userType = action.payload.userType;
+            // state.phone = action.payload.phone;
+            // state.status = action.payload.status;
+            // state.thumbImg = action.payload.thumbImg;
+        },
+        // chatFailure: (state, action) => {
+        //     state.isLoading = false;
+        // },
+    }
+);

@@ -12,8 +12,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getAuthenticated } from '../../redux/actions/user.js';
 import Contact from './contacts/Contact.jsx';
-import { getContacts, getSessionInfo } from '../../_utils/firebase.js';
+import { getContacts } from '../../_utils/firebase.js';
 import ContactsList from './contacts/ContactsList.jsx';
+import ChatScreen from './chatScreen/ChatScreen.jsx';
 
 // } from './../../context/agora/PropsContext';
 const Window = () => {
@@ -131,7 +132,7 @@ const Window = () => {
                         <input type="text" placeholder="Search or start new chat" />
                     </div>
                 </div>
-                <ContactsList/>
+                <ContactsList />
                 {/* <div className="chat-list">
                     <Contact />
                 </div> */}
@@ -402,7 +403,12 @@ const Window = () => {
                 </div>
             </div>
 
-            <div className="right-container">
+
+
+
+            <ChatScreen />
+
+            {/* <div className="right-container">
                 <div className="header">
                     <div className="img-text">
                         <div className="user-img">
@@ -418,14 +424,20 @@ const Window = () => {
                             <span>Online</span>
                         </h4>
                     </div>
-                    <ul className="nav-icons">
-                        {/* <li>
+                    <ul className="nav-icons"> */}
+
+
+
+            {/* <li>
                                 <i className={`ri-vidicon-line ${isVideoCallActive ? 'video-call-active' : ''}`} onClick={() => { handelStartVideoCall() }}></i>
                             </li>
                             <li>
                                 <i className={`ri-broadcast-line ${isBroadcastActive ? 'video-call-active' : ''}`} onClick={() => { handelStartBroadcastCall() }}></i>
                             </li> */}
-                        <li>
+
+
+
+            {/* <li>
                             <i className="ri-phone-line"></i>
                         </li>
                         <li>
@@ -513,7 +525,7 @@ const Window = () => {
                     <input type="text" placeholder="Type a message" />
                     <i className="ri-send-plane-fill"></i>
                 </div>
-            </div>
+            </div> */}
 
         </div>
         {/* {isVideoCallActive ? (<FullScreenVideoContainer rtcProps={videoCallProps.rtcProps} rtmProps={videoCallProps.rtmProps} callbacks={videoCallProps.callbacks} />) : (<FullScreenVideoContainer rtcProps={broadcastCallProps.rtcProps} rtmProps={broadcastCallProps.rtmProps} callbacks={broadcastCallProps.callbacks} />)}

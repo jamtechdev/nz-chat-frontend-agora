@@ -20,3 +20,12 @@ export const getAuthenticated = identifier => async dispatch => {
         dispatch({ type: 'authFailure', payload: error.message });
     }
 }
+
+export const setCurrentChat = (currentChatObj) => async dispatch => {
+    try {
+        dispatch({ type: 'currentChat', payload: {...currentChatObj} });
+        // console.log(currentChatObj);
+    } catch (error) {
+        console.log(error);
+    }
+}

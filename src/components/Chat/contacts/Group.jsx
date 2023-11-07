@@ -3,33 +3,34 @@ import { convertTimestamp } from '../../../_utils/helper'
 import { useDispatch } from 'react-redux';
 import { setCurrentChat } from '../../../redux/actions/user';
 
-const Contact = ({ userId, userDetails, latestMessage }) => {
+const Group = ({groupId, groupDetails}) => {
+    // console.log(convertTimestamp(latestMessage.timestamp))
     const dispatch = useDispatch();
     
-    const openUserChat = (userId, userDetails) => {
+    const openGroupChat = (groupId, groupDetails) => {
         let currentChatObj = {
-            userId : userId,
-            name : userDetails.name,
-            photo : userDetails.photo,
-            userType : "user"
+            groupId : groupId,
+            name : groupDetails.name,
+            photo : groupDetails.photo,
+            userType : "group"
         }
+        // console.log(currentChatObj)
         dispatch(setCurrentChat(currentChatObj));
     };
-    
     return (
-        <div className="chat-box" onClick={() => openUserChat(userId, userDetails)}>
+        <div className="chat-box"  onClick={() => openGroupChat(groupId, groupDetails)}>
             <div className="img-box">
                 <img
                     className="img-cover"
-                    src={userDetails.photo}
+                    src={groupDetails.photo} 
                     alt=""
                 />
             </div>
             <div className="chat-details">
                 <div className="text-head">
-                    <h4>{userDetails.name}</h4>
-                    {/* <p className="time unread">11:49</p> */}
-                    <p className="time unread">{convertTimestamp(latestMessage.timestamp)}</p>
+                    <h4>{groupDetails.name}</h4>
+                    <p className="time unread">11:49</p>
+                    {/* <p className="time unread">{convertTimestamp(latestMessage.timestamp)}</p> */}
                 </div>
                 <div className="text-message">
                     <p>“How are you?”</p>
@@ -40,4 +41,4 @@ const Contact = ({ userId, userDetails, latestMessage }) => {
     )
 }
 
-export default Contact
+export default Group

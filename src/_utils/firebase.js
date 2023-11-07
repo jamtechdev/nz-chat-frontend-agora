@@ -55,120 +55,170 @@ export const getUsers = async (userId) => {
 
 
 
-// import { ref, query, orderByChild, equalTo, get } from "firebase/database";
+
+// export const getContacts = async (userId) => {
+//     try {
+//       const messagesRef = ref(database, "messages");
+  
+//       const snapshot = await get(messagesRef);
+  
+//       const contacts = [];
+  
+//       if (snapshot.exists()) {
+//         snapshot.forEach((childSnapshot) => {
+//           const message = childSnapshot.val();
+  
+//           if (message.toId === userId || message.fromId === userId) {
+//             // Determine the contact's ID (the other user in the conversation)
+//             const contactId = message.toId === userId ? message.fromId : message.toId;
+  
+//             // Check if the contactId is not already in the contacts list
+//             if (!contacts.some((contact) => contact.userId === contactId)) {
+//               contacts.push({ userId: contactId });
+//             }
+//           }
+//         });
+  
+//         // Fetch user details for each contact
+//         const contactPromises = contacts.map(async (contact) => {
+//           const userRef = ref(database, `users/${contact.userId}`);
+//           const userSnapshot = await get(userRef);
+//           if (userSnapshot.exists()) {
+//             contact.userDetails = userSnapshot.val();
+//           }
+//           return contact;
+//         });
+  
+//         await Promise.all(contactPromises);
+//       } else {
+//         console.log('No data available');
+//       }
+  
+//       return contacts;
+//     } catch (error) {
+//       console.error('Error:', error);
+//       throw error;
+//     }
+//   };
+  
+
+
 
 
 export const getContacts = async (userId) => {
-    try {
-      const messagesRef = ref(database, "messages");
-  
-      const snapshot = await get(messagesRef);
-  
-      const contacts = [];
-  
-      if (snapshot.exists()) {
-        snapshot.forEach((childSnapshot) => {
-          const message = childSnapshot.val();
-  
-          if (message.toId === userId || message.fromId === userId) {
-            // Determine the contact's ID (the other user in the conversation)
-            const contactId = message.toId === userId ? message.fromId : message.toId;
-  
-            // Check if the contactId is not already in the contacts list
-            if (!contacts.some((contact) => contact.userId === contactId)) {
-              contacts.push({ userId: contactId });
-            }
+  try {
+    const messagesRef = ref(database, "messages");
+    const snapshot = await get(messagesRef);
+
+    const contacts = [];
+
+    if (snapshot.exists()) {
+      const latestMessages = new Map(); // Map to store the latest message for each contact
+
+      snapshot.forEach((childSnapshot) => {
+        const message = childSnapshot.val();
+
+        if (message.toId === userId || message.fromId === userId) {
+          const contactId = message.toId === userId ? message.fromId : message.toId;
+
+          if (!contacts.some((contact) => contact.userId === contactId)) {
+            contacts.push({ userId: contactId });
           }
-        });
-  
-        // Fetch user details for each contact
-        const contactPromises = contacts.map(async (contact) => {
-          const userRef = ref(database, `users/${contact.userId}`);
-          const userSnapshot = await get(userRef);
-          if (userSnapshot.exists()) {
-            contact.userDetails = userSnapshot.val();
+
+          // Check if this message is the latest for the contact
+          if (
+            !latestMessages.has(contactId) ||
+            message.timestamp > latestMessages.get(contactId).timestamp
+          ) {
+            latestMessages.set(contactId, { timestamp: message.timestamp, content: message.content });
           }
-          return contact;
-        });
-  
-        await Promise.all(contactPromises);
-      } else {
-        console.log('No data available');
-      }
-  
-      return contacts;
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }
-  };
-  
-// export const getContacts = async (userId) => {
-//   try {
-//     const messagesRef = ref(database, "messages");
-
-//     const snapshot = await get(messagesRef);
-
-//     const contacts = [];
-
-//     if (snapshot.exists()) {
-//       snapshot.forEach((childSnapshot) => {
-//         const message = childSnapshot.val();
-
-//         if (message.toId === userId || message.fromId === userId) {
-//           // Determine the contact's ID (the other user in the conversation)
-//           const contactId = message.toId === userId ? message.fromId : message.toId;
-
-//           // Check if the contactId is not already in the contacts list
-//           if (!contacts.some((contact) => contact.userId === contactId)) {
-//             contacts.push({ userId: contactId });
-//           }
-//         }
-//       });
-
-//       // Fetch user details for each contact
-//       for (const contact of contacts) {
-//         const userRef = ref(database, `users/${contact.userId}`);
-//         const userSnapshot = await get(userRef);
-//         if (userSnapshot.exists()) {
-//           contact.userDetails = userSnapshot.val();
-//         }
-//       }
-//     } else {
-//       console.log('No data available');
-//     }
-
-//     return contacts;
-//   } catch (error) {
-//     console.error('Error:', error);
-//     throw error;
-//   }
-// };
-
-
-
-export const getSessionInfo = (sessionId, callback) => {
-    try {
-      const sesRef = ref(database, `webSessions/${sessionId}`);
-      // Subscribe to real-time updates for the specific session
-      const unsubscribe = onValue(sesRef, (snapshot) => {
-        // console.log("Hello")
-        if (snapshot.exists()) {
-          const sessionInfo = snapshot.val();
-        //   console.log("SessionInf..........................",sessionInfo);
-          callback(sessionInfo);
-        } else {
-          callback(null); // Session does not exist
         }
       });
-  
-      // Return the unsubscribe function so you can stop listening to updates when needed
-      return unsubscribe;
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+
+      // Fetch user details for each contact
+      const contactPromises = contacts.map(async (contact) => {
+        const userRef = ref(database, `users/${contact.userId}`);
+        const userSnapshot = await get(userRef);
+        if (userSnapshot.exists()) {
+          contact.userDetails = userSnapshot.val();
+        }
+
+        // Add the latest message data
+        const latestMessage = latestMessages.get(contact.userId);
+        if (latestMessage) {
+          contact.latestMessage = latestMessage;
+        }
+
+        return contact;
+      });
+
+      await Promise.all(contactPromises);
+
+      // Sort contacts by the timestamp of the latest message (newest first)
+      contacts.sort((a, b) => b.latestMessage.timestamp - a.latestMessage.timestamp);
+    } else {
+      console.log('No data available');
     }
-  };
+
+    return contacts;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+};
+
+
+export const getGroups = async (userId) => {
+  try {
+    const groupsRef = ref(database, 'groups');
+    const groupsSnapshot = await get(groupsRef);
+    const groups = [];
+
+    if (groupsSnapshot.exists()) {
+      groupsSnapshot.forEach((groupSnapshot) => {
+        const groupData = groupSnapshot.val();
+
+        // Check if the user is present in the group
+        if (groupData.users && groupData.users[userId] === true) {
+          // If the user is present, add the group info and key to the result
+          groups.push({ key: groupSnapshot.key, info: groupData.info });
+        }
+      });
+    }
+
+    return groups;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+};
+
+
+
+
+
+// export const getSessionInfo = (sessionId, callback) => {
+//     try {
+//       const sesRef = ref(database, `webSessions/${sessionId}`);
+//       // Subscribe to real-time updates for the specific session
+//       const unsubscribe = onValue(sesRef, (snapshot) => {
+//         // console.log("Hello")
+//         if (snapshot.exists()) {
+//           const sessionInfo = snapshot.val();
+//         //   console.log("SessionInf..........................",sessionInfo);
+//           callback(sessionInfo);
+//         } else {
+//           callback(null); // Session does not exist
+//         }
+//       });
+  
+//       // Return the unsubscribe function so you can stop listening to updates when needed
+//       return unsubscribe;
+//     } catch (error) {
+//       console.error('Error:', error);
+//       throw error;
+//     }
+//   };
 
 
 

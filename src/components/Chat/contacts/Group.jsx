@@ -9,7 +9,7 @@ const Group = ({groupId, groupDetails}) => {
     
     const openGroupChat = (groupId, groupDetails) => {
         let currentChatObj = {
-            groupId : groupId,
+            userId : groupId,
             name : groupDetails.name,
             photo : groupDetails.photo,
             userType : "group"

@@ -1,9 +1,9 @@
 import React from 'react'
 
-const ChatMessage = ({ message, currentChaterId, userId }) => {
+const GroupMessage = ({ message, userId }) => {
     return (
         <>
-            {(message.fromId === currentChaterId && message.toId === userId) &&
+            {(message.fromId !== userId) ?
                 (
                     <div className="message-box friend-message">
                         <p>
@@ -15,8 +15,7 @@ const ChatMessage = ({ message, currentChaterId, userId }) => {
                         </p>
                     </div>
                 )
-            }
-            {(message.fromId === userId && message.toId === currentChaterId) &&
+            :
                 (
                     <div className="message-box my-message">
                         <p>
@@ -33,4 +32,4 @@ const ChatMessage = ({ message, currentChaterId, userId }) => {
     )
 }
 
-export default ChatMessage
+export default GroupMessage

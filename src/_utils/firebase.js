@@ -235,3 +235,72 @@ export const getGroups = async (userId) => {
 //         console.log("Error",error)
 //       }
 // }
+
+
+
+export const getMessages = async (userId, currentChaterId) => {
+  try {
+    const messagesRef = ref(database, "messages");
+    const snapshot = await get(messagesRef);
+
+    const messages = [];
+
+    if (snapshot.exists()) {
+      snapshot.forEach((childSnapshot) => {
+        const message = childSnapshot.val();
+
+        // Check if the userId matches toId or fromId, and currentChaterId matches the opposite
+        if (
+          (message.toId === userId || message.fromId === userId) &&
+          ((message.toId === currentChaterId && message.fromId === userId) ||
+           (message.toId === userId && message.fromId === currentChaterId))
+        ) {
+          messages.push(message);
+        }
+      });
+
+      // Sort messages by timestamp (if needed)
+      // messages.sort((a, b) => a.timestamp - b.timestamp);
+    } else {
+      console.log('No data available');
+    }
+
+    return messages;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+};
+
+
+export const getGroupMessages = async (groupId) => {
+  try {
+    const groupMessagesRef = ref(database, `groupsMessages/${groupId}`);
+    const snapshot = await get(groupMessagesRef);
+
+    const groupMessages = [];
+
+    if (snapshot.exists()) {
+      snapshot.forEach((childSnapshot) => {
+        const messageId = childSnapshot.key;
+        const messageData = childSnapshot.val();
+
+        // Assuming your messages have a structure like { text: 'Message text', sender: 'Sender ID', timestamp: 'Timestamp' }
+        const message = {
+          id: messageId,
+          ...messageData,
+        };
+
+        groupMessages.push(message);
+      });
+
+      return groupMessages;
+    } else {
+      console.log('No data available for this group');
+      return [];
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+};

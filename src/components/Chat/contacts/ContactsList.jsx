@@ -21,7 +21,7 @@ const ContactsList = () => {
             .catch((error) => {
                 console.error('Error:', error);
             });
-        getGroups("lXfgLgt6zMZkwX6c3aLC4eg9cuL2")
+        getGroups(uid)
             .then((groups) => {
                 // console.log(groups);
                 setUserGroups([...groups]);

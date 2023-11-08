@@ -19,6 +19,9 @@ const auth = getAuth();
 
 const database = getDatabase(app);
 
+const storageRef = firebase.storage().ref();
+const imageRef = storageRef.child('images/image.jpg');
+
 
 export const authenticateFirebase = async (token) => {
     await signInWithCustomToken(auth, token)

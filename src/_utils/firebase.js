@@ -6,6 +6,7 @@ import { getDatabase, child, onValue } from "firebase/database";
 import { getAuth, signInWithCustomToken } from "firebase/auth";
 import { ref, query, orderByChild, startAt, endAt, get , equalTo} from "firebase/database";
 import { firebaseConfig } from "../config/config";
+import { getStorage, getDownloadURL } from "firebase/storage";
 
 
 // Initialize Firebase

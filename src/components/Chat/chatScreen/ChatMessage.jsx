@@ -1,11 +1,32 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { decription } from '../../../_utils/cryptography';
+import { getFileFromFireStorage } from '../../../_utils/firebase';
 
 const ChatMessage = ({ message, currentChaterId, userId }) => {
-    const [finalMessage, setFinalMessage] = useState("")
-    decription(message.content).then((content) => {
-        setFinalMessage(content);
-    })
+    const [finalMessage, setFinalMessage] = useState("");
+    const [file, setFile] = useState("");
+    // const 
+
+    useEffect(() => {
+        decription(message.content).then((content) => {
+
+            if (message && message.type !== 1) {
+                getFileFromFireStorage(content)
+                    .then((filePath) => {
+                        // console.log(filePath)
+                        setFile(filePath)
+                    }).catch((error) => {
+                        // console.error(error);
+                        setFile("")
+                    });
+            }
+            else if (message && message.type == 1) {
+                setFinalMessage(content);
+            }
+            else
+                setFinalMessage("")
+        })
+    }, []);
     // console.log(message)
     return (
         <>
@@ -14,9 +35,12 @@ const ChatMessage = ({ message, currentChaterId, userId }) => {
                     <div className="message-box friend-message">
 
                         <p>
-                            <b>{(message && message.fileSize) && "file Hai"}</b>
-                            <br />
-                            {finalMessage}
+                            {(message && message.type !== 1) ?
+                                <img src={file} />
+                                :
+                                 finalMessage 
+                            }
+
                             {/* {message.content} */}
                             {/* I've been waiting to watch it!! */}
                             <br />
@@ -32,9 +56,12 @@ const ChatMessage = ({ message, currentChaterId, userId }) => {
 
 
                         <p>
-                            <b>{(message && message.fileSize) && "file Hai"}</b>
-                            <br />
-                            {finalMessage}
+                            {(message && message.type !== 1) ?
+                                <img src={file} />
+                                :
+                                 finalMessage 
+                            }
+
                             {/* {message.content} */}
                             {/* 😐😐😐 */}
                             <br />

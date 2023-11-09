@@ -42,7 +42,7 @@ export default function Home() {
               </ul>
             </div>
             <div className="navbar">
-              <Link to="/web" className="btn-login">Login</Link>
+              <Link to="/chat" className="btn-login">Login</Link>
             </div>
 
             <div id="mobileNav">

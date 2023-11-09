@@ -4,7 +4,7 @@ import { getContacts, getGroups } from '../../../_utils/firebase';
 import Contact from './Contact';
 import Group from './Group';
 
-const ContactsList = () => {
+const ContactsList = ({displayUsers}) => {
 
     const [userContacts, setUserContacts] = useState([]);
     const [userGroups, setUserGroups] = useState([]);
@@ -32,11 +32,12 @@ const ContactsList = () => {
 
 
     }, []);
-
+    
     return (
         <div className="chat-list">
             {/* {console.log(userContacts)} */}
-            {userContacts.map((contact) => (
+           
+            {displayUsers?.map((contact) => (
                 <Fragment key={contact.userId} >
                     <Contact
                         userId={contact.userId}

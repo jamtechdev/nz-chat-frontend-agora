@@ -6,138 +6,193 @@
 //     PropsProvider,
 //     PropsInterface,
 //     layout
-import axios from 'axios';
-import { useEffect } from "react";
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { getAuthenticated } from '../../redux/actions/user.js';
-import Contact from './contacts/Contact.jsx';
-import { getContacts } from '../../_utils/firebase.js';
-import ContactsList from './contacts/ContactsList.jsx';
-import ChatScreen from './chatScreen/ChatScreen.jsx';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getAuthenticated } from "../../redux/actions/user.js";
+import Contact from "./contacts/Contact.jsx";
+import { getContacts, getGroups } from "../../_utils/firebase.js";
+
+import ContactsList from "./contacts/ContactsList.jsx";
+import ChatScreen from "./chatScreen/ChatScreen.jsx";
 
 // } from './../../context/agora/PropsContext';
 const Window = () => {
-    // const navigate = useNavigate();
-    const identifier = localStorage.getItem("sessionIdentifier");
-    const dispatch = useDispatch();
-    const { uid, name, photo, status } = useSelector(state => state.user);
-    // const {
-    //     isBroadcastActive,
-    //     isVideoCallActive,
-    //     userName,
-    //     isPinned,
-    //     isHost,
-    //     handelStartVideoCall,
-    //     handelEndVideoCall,
-    //     handelStartBroadcastCall
-    // } = useVideoCallContext();
-    // const videoCallProps = {
-    //     rtcProps: {
-    //         appId: '0a34f37fd8b14cd99fb8393177faa313',
-    //         channel: 'rtmtest',
-    //         token: null, // add your token if using the app in secured mode
-    //         layout: 0,
-    //         enableScreensharing: isHost ? true : true,
-    //         disableRtm: false,
-    //         uid: generateNumericUID(9)
-    //     },
-    //     rtmProps: {
-    //         username: userName || 'user',
-    //         displayUsername: true
+  // const navigate = useNavigate();
+  const identifier = localStorage.getItem("sessionIdentifier");
+  const dispatch = useDispatch();
+  const [userContacts, setUserContacts] = useState([]);
+  const [userGroups, setUserGroups] = useState([]);
+  const { uid, name, photo, status } = useSelector((state) => state.user);
+  useEffect(() => {
+    // getSessionInfo("-NiZViI3GpnUynHaKUBQ", (info) => { console.log(info) });
+    getContacts(uid)
+      .then((contacts) => {
+        // console.log(contacts?.userDetails ,'content');
+        setUserContacts(contacts);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    getGroups(uid)
+      .then((groups) => {
+        // console.log(groups);
+        setUserGroups([...groups]);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
+  //   serach query
+  const [search, setSearch] = useState("");
+  const [filteredContacts, setFilteredContacts] = useState([]);
 
-    //     },
-    //     callbacks: {
-    //         EndCall: () => handelEndVideoCall(),
+  const handleSearch = (e) => {
+    const searchTerm = e.target.value;
+    setSearch(searchTerm);
 
+    // Filter the contacts based on the search term
+    const filtered = userContacts.filter((contact) =>
+      contact?.userDetails?.name
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+    // contact.userDetails.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    setFilteredContacts(filtered);
+  };
+  console.log(filteredContacts);
+  const displayUsers =
+    filteredContacts.length > 0 ? filteredContacts : userContacts;
 
+  // const {
+  //     isBroadcastActive,
+  //     isVideoCallActive,
+  //     userName,
+  //     isPinned,
+  //     isHost,
+  //     handelStartVideoCall,
+  //     handelEndVideoCall,
+  //     handelStartBroadcastCall
+  // } = useVideoCallContext();
+  // const videoCallProps = {
+  //     rtcProps: {
+  //         appId: '0a34f37fd8b14cd99fb8393177faa313',
+  //         channel: 'rtmtest',
+  //         token: null, // add your token if using the app in secured mode
+  //         layout: 0,
+  //         enableScreensharing: isHost ? true : true,
+  //         disableRtm: false,
+  //         uid: generateNumericUID(9)
+  //     },
+  //     rtmProps: {
+  //         username: userName || 'user',
+  //         displayUsername: true
+
+  //     },
+  //     callbacks: {
+  //         EndCall: () => handelEndVideoCall(),
+
+  //     }
+  // };
+  // const broadcastCallProps = {
+  //     rtcProps: {
+  //         appId: '0a34f37fd8b14cd99fb8393177faa313',
+  //         channel: 'rtmtest',
+  //         token: null, // add your token if using the app in secured mode
+  //         layout: 0,
+  //         role: isHost ? 'host' : 'host',
+  //         enableScreensharing: false,
+  //         disableRtm: false,
+  //         uid: generateNumericUID(9)
+  //     },
+  //     rtmProps: {
+  //         username: 'joe' || 'user',
+  //         displayUsername: true
+
+  //     },
+  //     callbacks: {
+  //         EndCall: () => handelEndVideoCall(),
+
+  //     }
+  // };
+
+  useEffect(() => {
+    // dispatch(getAuthenticated(identifier))
+    // if(identifier)
+    // axios.get("http://localhost:9000/api/users/getAuthenticatedUser", {
+    //     params: {
+    //         identifier: identifier,
     //     }
-    // };
-    // const broadcastCallProps = {
-    //     rtcProps: {
-    //         appId: '0a34f37fd8b14cd99fb8393177faa313',
-    //         channel: 'rtmtest',
-    //         token: null, // add your token if using the app in secured mode
-    //         layout: 0,
-    //         role: isHost ? 'host' : 'host',
-    //         enableScreensharing: false,
-    //         disableRtm: false,
-    //         uid: generateNumericUID(9)
-    //     },
-    //     rtmProps: {
-    //         username: 'joe' || 'user',
-    //         displayUsername: true
+    // })
+    //     .then((response) => {
+    //         console.log(response.data);
+    //     })
+    //     .catch((error) => {
+    //         localStorage.clear()
+    //         navigate('/nz-chat-web');
+    //         console.error(error);
+    //     });
+    // getSessionInfo("-NiZViI3GpnUynHaKUBQ", (info) => { console.log(info) });
+    // getContacts(uid)
+    //     .then((contacts) => {
+    //         console.log(contacts);
+    //     })
+    //     .catch((error) => {
+    //         console.error('Error:', error);
+    //     });
+  }, []);
 
-    //     },
-    //     callbacks: {
-    //         EndCall: () => handelEndVideoCall(),
+  return (
+    <>
+      {/* <PropsProvider value={isBroadcastActive ? broadcastCallProps : videoCallProps}> */}
+      <div className="main-container" id="chat__wrapper">
+        <div className="left-container">
+          <div className="header">
+            <div className="user-img">
+              <img
+                className="dp"
+                src={photo}
+                // src="https://www.codewithfaraz.com/InstaPic.png"
+                alt=""
+              />
+            </div>
+            <ul className="nav-icons">
+              <li>
+                <i className="ri-team-fill"></i>
+              </li>
+              <li>
+                <i className="ri-more-2-fill"></i>
+              </li>
+            </ul>
+          </div>
 
+          <div className="search-container">
+            <div className="input" value={search} onChange={handleSearch}>
+              <i className="ri-search-line"></i>
+              <input type="text" placeholder="Search or start new chat" />
+            </div>
+          </div>
+          {search.length == 0 ? (
+            <>
+              {" "}
+              <ContactsList displayUsers={displayUsers} />
+            </>
+          ) : search.length > 0 && filteredContacts.length > 0 ? (
+            <>
+              {" "}
+              <ContactsList displayUsers={displayUsers} />
+            </>
+          ) : (
+            <>
+              <p>no data found</p>
+            </>
+          )}
 
-    //     }
-    // };
-
-    useEffect(() => {
-        // dispatch(getAuthenticated(identifier))
-        // if(identifier)
-        // axios.get("http://localhost:9000/api/users/getAuthenticatedUser", {
-        //     params: {
-        //         identifier: identifier,
-        //     }
-        // })
-        //     .then((response) => {
-        //         console.log(response.data);
-        //     })
-        //     .catch((error) => {
-        //         localStorage.clear()
-        //         navigate('/nz-chat-web');
-        //         console.error(error);
-        //     });
-        // getSessionInfo("-NiZViI3GpnUynHaKUBQ", (info) => { console.log(info) });
-        // getContacts(uid)
-        //     .then((contacts) => {
-        //         console.log(contacts);
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error:', error);
-        //     });
-    }, [])
-
-    return (<>
-        {/* <PropsProvider value={isBroadcastActive ? broadcastCallProps : videoCallProps}> */}
-        <div className="main-container" id="chat__wrapper">
-
-            <div className="left-container">
-                <div className="header">
-                    <div className="user-img">
-                        <img
-                            className="dp"
-                            src={photo}
-                            // src="https://www.codewithfaraz.com/InstaPic.png"
-                            alt=""
-                        />
-                    </div>
-                    <ul className="nav-icons">
-                        <li>
-                            <i className="ri-team-fill"></i>
-                        </li>
-                        <li>
-                            <i className="ri-more-2-fill"></i>
-                        </li>
-                    </ul>
-                </div>
-
-                <div className="search-container">
-                    <div className="input">
-                        <i className="ri-search-line"></i>
-                        <input type="text" placeholder="Search or start new chat" />
-                    </div>
-                </div>
-                <ContactsList />
-                {/* <div className="chat-list">
+          {/* <div className="chat-list">
                     <Contact />
                 </div> */}
-
-                {/* <div className="chat-list">
+          {/* <div className="chat-list">
                     <div className="chat-box">
                         <div className="img-box">
                             <img
@@ -397,18 +452,15 @@ const Window = () => {
                     </div>
                 </div> */}
 
-                <div className="chat-bottom">
-                    <img className="app-logo" src="images/app_logo.png" alt="" />{" "}
-                    <p>@ 2023 Nzchat App. All rights reserved</p>
-                </div>
-            </div>
+          <div className="chat-bottom">
+            <img className="app-logo" src="images/app_logo.png" alt="" />{" "}
+            <p>@ 2023 Nzchat App. All rights reserved</p>
+          </div>
+        </div>
 
+        <ChatScreen />
 
-
-
-            <ChatScreen />
-
-            {/* <div className="right-container">
+        {/* <div className="right-container">
                 <div className="header">
                     <div className="img-text">
                         <div className="user-img">
@@ -426,18 +478,14 @@ const Window = () => {
                     </div>
                     <ul className="nav-icons"> */}
 
-
-
-            {/* <li>
+        {/* <li>
                                 <i className={`ri-vidicon-line ${isVideoCallActive ? 'video-call-active' : ''}`} onClick={() => { handelStartVideoCall() }}></i>
                             </li>
                             <li>
                                 <i className={`ri-broadcast-line ${isBroadcastActive ? 'video-call-active' : ''}`} onClick={() => { handelStartBroadcastCall() }}></i>
                             </li> */}
 
-
-
-            {/* <li>
+        {/* <li>
                             <i className="ri-phone-line"></i>
                         </li>
                         <li>
@@ -526,11 +574,11 @@ const Window = () => {
                     <i className="ri-send-plane-fill"></i>
                 </div>
             </div> */}
-
-        </div>
-        {/* {isVideoCallActive ? (<FullScreenVideoContainer rtcProps={videoCallProps.rtcProps} rtmProps={videoCallProps.rtmProps} callbacks={videoCallProps.callbacks} />) : (<FullScreenVideoContainer rtcProps={broadcastCallProps.rtcProps} rtmProps={broadcastCallProps.rtmProps} callbacks={broadcastCallProps.callbacks} />)}
+      </div>
+      {/* {isVideoCallActive ? (<FullScreenVideoContainer rtcProps={videoCallProps.rtcProps} rtmProps={videoCallProps.rtmProps} callbacks={videoCallProps.callbacks} />) : (<FullScreenVideoContainer rtcProps={broadcastCallProps.rtcProps} rtmProps={broadcastCallProps.rtmProps} callbacks={broadcastCallProps.callbacks} />)}
         </PropsProvider> */}
-    </>)
+    </>
+  );
 };
 
 export default Window;

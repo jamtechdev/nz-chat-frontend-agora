@@ -32,8 +32,8 @@ const Contact = ({ userId, userDetails, latestMessage }) => {
                     <p className="time unread">{convertTimestamp(latestMessage.timestamp)}</p>
                 </div>
                 <div className="text-message">
-                    <p>“How are you?”</p>
-                    <b>1</b>
+                    {/* <p>“How are you?”</p>
+                    <b>1</b> */}
                 </div>
             </div>
         </div>

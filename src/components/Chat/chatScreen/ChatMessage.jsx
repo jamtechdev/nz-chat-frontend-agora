@@ -36,7 +36,7 @@ const ChatMessage = ({ message, currentChaterId, userId }) => {
 
                         <p>
                             {(message && message.type !== 1) ?
-                                <img src={file} />
+                                <img src={file} alt='image not found'/>
                                 :
                                  finalMessage 
                             }
@@ -57,7 +57,7 @@ const ChatMessage = ({ message, currentChaterId, userId }) => {
 
                         <p>
                             {(message && message.type !== 1) ?
-                                <img src={file} />
+                                <img src={file} alt='image not found'/>
                                 :
                                  finalMessage 
                             }

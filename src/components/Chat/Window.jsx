@@ -61,7 +61,7 @@ const Window = () => {
     // contact.userDetails.name?.toLowerCase().includes(searchTerm.toLowerCase())
     setFilteredContacts(filtered);
   };
-  console.log(filteredContacts);
+//   console.log(filteredContacts);
   const displayUsers =
     filteredContacts.length > 0 ? filteredContacts : userContacts;
 

@@ -4,9 +4,10 @@ import { getAnalytics } from "firebase/analytics";
 // import { getDatabase, ref, get, child, onValue } from "firebase/database";
 import { getDatabase, child, onValue } from "firebase/database";
 import { getAuth, signInWithCustomToken } from "firebase/auth";
-import { ref, query, orderByChild, startAt, endAt, get , equalTo} from "firebase/database";
+import { ref, query, orderByChild, startAt, endAt, get, equalTo } from "firebase/database";
 import { firebaseConfig } from "../config/config";
-import { getStorage, getDownloadURL } from "firebase/storage";
+import { getStorage, ref as sref, getDownloadURL } from "firebase/storage";
+import { async } from "q";
 
 
 // Initialize Firebase
@@ -19,41 +20,51 @@ const auth = getAuth();
 
 const database = getDatabase(app);
 
-const storageRef = firebase.storage().ref();
-const imageRef = storageRef.child('images/image.jpg');
+const storage = getStorage(app);
+// const starsRef = ref(storage, 'images/stars.jpg');
+
+export const getFileFromFireStorage = async (path) => {
+  try {
+    let url = await getDownloadURL(sref(storage, path))
+    return url
+  }
+  catch (error) {
+    throw error;
+  }
+}
 
 
 export const authenticateFirebase = async (token) => {
-    await signInWithCustomToken(auth, token)
-        .then((userCredential) => {
-            // Signed in
-            const user = userCredential.user;
-            // console.log(auth);
-        })
-        .catch((error) => {
-            // const errorCode = error.code;
-            // const errorMessage = error.message;
-            throw error
-        });
+  await signInWithCustomToken(auth, token)
+    .then((userCredential) => {
+      // Signed in
+      const user = userCredential.user;
+      // console.log(auth);
+    })
+    .catch((error) => {
+      // const errorCode = error.code;
+      // const errorMessage = error.message;
+      throw error
+    });
 }
 
 
 export const getUsers = async (userId) => {
-    try {
-        const userRef = ref(database, `users/${userId}`);
-        const snapshot = await get(userRef);
+  try {
+    const userRef = ref(database, `users/${userId}`);
+    const snapshot = await get(userRef);
 
-        if (snapshot.exists()) {
-            // console.log(snapshot.val());
-            return snapshot.val();
-        } else {
-            console.log('---------------------------No data available');
-            return null;
-        }
-    } catch (error) {
-        console.error('---------------------------Error:', error);
-        throw error;
+    if (snapshot.exists()) {
+      // console.log(snapshot.val());
+      return snapshot.val();
+    } else {
+      console.log('---------------------------No data available');
+      return null;
     }
+  } catch (error) {
+    console.error('---------------------------Error:', error);
+    throw error;
+  }
 }
 
 
@@ -63,26 +74,26 @@ export const getUsers = async (userId) => {
 // export const getContacts = async (userId) => {
 //     try {
 //       const messagesRef = ref(database, "messages");
-  
+
 //       const snapshot = await get(messagesRef);
-  
+
 //       const contacts = [];
-  
+
 //       if (snapshot.exists()) {
 //         snapshot.forEach((childSnapshot) => {
 //           const message = childSnapshot.val();
-  
+
 //           if (message.toId === userId || message.fromId === userId) {
 //             // Determine the contact's ID (the other user in the conversation)
 //             const contactId = message.toId === userId ? message.fromId : message.toId;
-  
+
 //             // Check if the contactId is not already in the contacts list
 //             if (!contacts.some((contact) => contact.userId === contactId)) {
 //               contacts.push({ userId: contactId });
 //             }
 //           }
 //         });
-  
+
 //         // Fetch user details for each contact
 //         const contactPromises = contacts.map(async (contact) => {
 //           const userRef = ref(database, `users/${contact.userId}`);
@@ -92,19 +103,19 @@ export const getUsers = async (userId) => {
 //           }
 //           return contact;
 //         });
-  
+
 //         await Promise.all(contactPromises);
 //       } else {
 //         console.log('No data available');
 //       }
-  
+
 //       return contacts;
 //     } catch (error) {
 //       console.error('Error:', error);
 //       throw error;
 //     }
 //   };
-  
+
 
 
 
@@ -215,7 +226,7 @@ export const getGroups = async (userId) => {
 //           callback(null); // Session does not exist
 //         }
 //       });
-  
+
 //       // Return the unsubscribe function so you can stop listening to updates when needed
 //       return unsubscribe;
 //     } catch (error) {
@@ -257,7 +268,7 @@ export const getMessages = async (userId, currentChaterId) => {
         if (
           (message.toId === userId || message.fromId === userId) &&
           ((message.toId === currentChaterId && message.fromId === userId) ||
-           (message.toId === userId && message.fromId === currentChaterId))
+            (message.toId === userId && message.fromId === currentChaterId))
         ) {
           messages.push(message);
         }
@@ -308,3 +319,35 @@ export const getGroupMessages = async (groupId) => {
     throw error;
   }
 };
+
+
+// export const userLastMessage = async (userId, currentChaterId) => {
+//   try {
+//     const messagesRef = ref(database, "messages");
+//     const snapshot = await get(messagesRef);
+
+//     const messages = [];
+
+//     if (snapshot.exists()) {
+//       snapshot.forEach((childSnapshot) => {
+//         const message = childSnapshot.val();
+
+//         if (
+//           (message.toId === userId || message.fromId === userId) &&
+//           ((message.toId === currentChaterId && message.fromId === userId) ||
+//             (message.toId === userId && message.fromId === currentChaterId))
+//         ) {
+//           messages.push(message);
+//         }
+//       });
+
+//     } else {
+//       console.log('No data available');
+//     }
+
+//     return messages;
+//   } catch (error) {
+//     console.error('Error:', error);
+//     throw error;
+//   }
+// }

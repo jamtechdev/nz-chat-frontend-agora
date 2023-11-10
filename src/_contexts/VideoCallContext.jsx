@@ -14,8 +14,10 @@ import { layout } from 'agora-react-uikit'
 import { useUnMount } from "../_hooks";
 import { nanoid } from "nanoid";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 export const VideoCallContext = createContext();
 export default function VideoCallProvider({ children }) {
+  const { name} = useSelector(state => state.user)
   const navigate = useNavigate();
   const Alert = withReactContent(Swal);
   const APP_ID = "fe59ad8be52e430eaacc2da8f60d3cac";
@@ -41,7 +43,7 @@ export default function VideoCallProvider({ children }) {
         layout: layout.grid,
         enableScreensharing: true
       })
-      setRtmProps({ username: nanoid(), displayUsername: true })
+      setRtmProps({ username: name, displayUsername: true })
       setJoined(true)
     } catch (error) {
       console.log("Error: initMeeting", error);
@@ -66,7 +68,7 @@ export default function VideoCallProvider({ children }) {
   };
   const handelLeaveMeeting = async () => {
     setJoined(false)
-    // window.location.href = '/'
+    window.location.href = '/chat'
   };
 
   useEffect(() => {

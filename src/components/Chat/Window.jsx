@@ -9,7 +9,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getAuthenticated } from "../../redux/actions/user.js";
 import Contact from "./contacts/Contact.jsx";
 import { getContacts, getGroups } from "../../_utils/firebase.js";
@@ -159,7 +159,9 @@ const Window = () => {
             </div>
             <ul className="nav-icons">
               <li>
-                <i className="ri-team-fill"></i>
+                <Link to='/meeting'>
+                <i className="ri-team-fill" title="Meeting"></i>
+                </Link>
               </li>
               <li>
                 <i className="ri-more-2-fill"></i>

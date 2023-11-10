@@ -11,3 +11,24 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#gallery {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: calc(var(--width) * var(--cols));
+  --width:inherit;
+  --height:inherit;
+  --cols:inherit
+}
+
+#gallery .video-container {
+  width: var(--width);
+  height: var(--height);
+  background-color: #3a3a3e;
+}
+
+#gallery .video-container video {
+  height: 100%;
+  width: 100%;
+}

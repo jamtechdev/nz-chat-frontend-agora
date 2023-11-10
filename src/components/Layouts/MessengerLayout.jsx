@@ -1,28 +1,21 @@
 // MainLayout.js
 import React from "react";
-import { Container, Row } from "react-bootstrap";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import InformationMessageProvider from "../../_contexts/InformationMessageContext";
+import { Toaster } from "react-hot-toast";
+import VideoCallContext from "../../_contexts/VideoCallContext";
+import { toastConfig } from "../../_utils/"
 const MessengerLayout = ({ children }) => (
   <>
-    <InformationMessageProvider>
-      <Container>
-        <Row>{children}</Row>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={true}
-          newestOnTop={true}
-          closeOnClick={() => {
-            return true;
-          }}
-          rtl={false}
-          pauseOnHover={true}
-          theme="dark"
-        />
-      </Container>
-    </InformationMessageProvider>
+    <VideoCallContext>
+      <>{children}</>
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={10}
+        containerClassName=""
+        containerStyle={{}}
+        toastOptions={{ ...toastConfig }}
+      />
+    </VideoCallContext>
   </>
 );
 

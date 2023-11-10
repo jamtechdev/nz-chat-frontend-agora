@@ -4,17 +4,16 @@ import { lazy } from "react";
 import MainLayout from "../components/Layouts/MainLayout";
 import MessengerLayout from "../components/Layouts/MessengerLayout";
 const IndexPage = lazy(() => import("../pages/IndexPage"));
-const CreateMeeting = lazy(() => import("../pages/CreateMeeting"));
-
+const Meeting = lazy(() => import("../pages/Meeting"));
 const routes = [
   {
     path: "/",
     element: <MainLayout><IndexPage /></MainLayout>,
   },
   {
-    path: "/create-meeting",
-    element: <MessengerLayout><CreateMeeting /></MessengerLayout>,
-  },
+    path: "/meeting",
+    element: <MessengerLayout><Meeting /></MessengerLayout>,
+  }
 ];
 
 export default routes;

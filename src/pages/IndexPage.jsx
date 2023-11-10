@@ -13,7 +13,7 @@ import "../styles/grid.css";
 
 export default function Home() {
   return (
-    <>
+    <div className="home-Wrapper">
       <header id="home">
         <div className="row">
           <nav>
@@ -386,6 +386,6 @@ export default function Home() {
       <section className="copy-right-section">
         <p>@ 2023 Nzchat App. All rights reserved</p>
       </section>
-    </>
+    </div>
   );
 }

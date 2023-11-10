@@ -138,7 +138,6 @@ export const getContacts = async (userId) => {
           if (!contacts.some((contact) => contact.userId === contactId)) {
             contacts.push({ userId: contactId });
           }
-
           // Check if this message is the latest for the contact
           if (
             !latestMessages.has(contactId) ||

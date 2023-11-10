@@ -8,21 +8,19 @@ import MessengerLayout from "../components/Layouts/MessengerLayout";
 const Home = lazy(() => import("../pages/IndexPage"));
 const Web = lazy(() => import("../pages/Web"));
 // const IndexPage = lazy(() => import("../pages/IndexPage"));
-const CreateMeeting = lazy(() => import("../pages/CreateMeeting"));
+// const CreateMeeting = lazy(() => import("../pages/CreateMeeting"));
 
+const IndexPage = lazy(() => import("../pages/IndexPage"));
+const Meeting = lazy(() => import("../pages/Meeting"));
 const routes = [
   {
     path: "/",
     element: <MainLayout><Home /></MainLayout>,
   },
   {
-    path: "/create-meeting",
-    element: <MessengerLayout><CreateMeeting /></MessengerLayout>,
-  },
-  // {
-  //   path: "/nz-chat-web",
-  //   element: <MainLayout><Web /></MainLayout>,
-  // },
+    path: "/meeting",
+    element: <MessengerLayout><Meeting /></MessengerLayout>,
+  }
 ];
 
 export default routes;

@@ -1,146 +1,116 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, createContext, useContext, useEffect } from "react";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import toast from "react-hot-toast";
 import {
-  showJoinedMessage,
   createMicrophoneAudioTrack,
   createCameraVideoTrack,
+  errors,
+  success,
+  infos,
 } from "../_utils";
-import { useUrlQuery, useUnMount } from "../_hooks";
-import {getMeetingURL} from "../_utils";
-import { useInformationMessageContext } from "./InformationMessageContext";
-import AgoraRTC from "agora-rtc-sdk-ng";
+import { layout } from 'agora-react-uikit'
+import { useUnMount } from "../_hooks";
+import { nanoid } from "nanoid";
+import { useNavigate, useSearchParams } from "react-router-dom";
 export const VideoCallContext = createContext();
 export default function VideoCallProvider({ children }) {
+  const navigate = useNavigate();
+  const Alert = withReactContent(Swal);
   const APP_ID = "fe59ad8be52e430eaacc2da8f60d3cac";
   const TOKEN = null;
-  let client = null;
-  let codec = "vp8";
+  let [queryString, setQueryString] = useSearchParams();
+  const [meetingStep, setMeetingStep] = useState(1);
   const [joined, setJoined] = useState(false);
-  const [videoTrack, setVideoTrack] = useState(null);
-  const [audioTrack, setAudioTrack] = useState(null);
-  const [remoteUsers, setRemoteUsers] = useState({});
-  const [localUid, setLocalUid] = useState("");
   const [meetingName, setMeetingName] = useState("");
-  const { setShowInformationMessage, setInformationMessage } =
-    useInformationMessageContext();
-  const initTracks = async () => {
+  const [isSharedMeeting, setIsSharedMeeting] = useState(false);
+  const sharedMeetingName = queryString.get("meeting");
+  const [rtcProps, setRtcProps] = useState({});
+  const [rtmProps, setRtmProps] = useState({});
+  const handelMeetingStep = (value) => {
+    setMeetingStep(value);
+  };
+  const initMeeting = async () => {
     try {
-      const tracks = await Promise.all([
-        createMicrophoneAudioTrack(),
-        createCameraVideoTrack(),
-      ]);
-      setAudioTrack(tracks[0]);
-      setVideoTrack(tracks[1]);
-      return tracks;
+      setRtcProps({
+        appId: APP_ID,
+        channel: meetingName,
+        token: TOKEN,
+        role: 'host',
+        layout: layout.grid,
+        enableScreensharing: true
+      })
+      setRtmProps({ username: nanoid(), displayUsername: true })
+      setJoined(true)
     } catch (error) {
-      throw error;
+      console.log("Error: initMeeting", error);
     }
   };
-  const subscribe = async (user, mediaType) => {
-    await client.subscribe(user, mediaType);
+  const getMeetingURL = () => {
+    const href = window.location.origin;
+    const url = `${href}/meeting?meeting=${meetingName}`;
+    const node = (
+      <span>
+        You can invite others to join this meeting by sharing the URL below.{" "}
+        <a href={url} target="_blank" rel="noreferrer">
+          here
+        </a>
+      </span>
+    );
+    return { node, url };
   };
-
-  const handleUserPublished = async (user, mediaType) => {
-    const id = user.uid;
-    await subscribe(user, mediaType);
-    setRemoteUsers((prev) => ({
-      ...prev,
-      [id]: user,
-    }));
-  };
-  const handleUserUnpublished = (user, mediaType) => {
-    if (mediaType === "video") {
-      const id = user.uid;
-      setRemoteUsers((pre) => {
-        delete pre[id];
-        return {
-          ...pre,
-        };
-      });
-    }
-  };
-  const handelJoinMeeting = async () => {
-    try {
-      client = AgoraRTC.createClient({
-        mode: "rtc",
-        codec: codec,
-      });
-
-      client.on("user-published", handleUserPublished);
-      client.on("user-unpublished", handleUserUnpublished);
-
-      let tracks = [audioTrack, videoTrack];
-      if (!audioTrack && !videoTrack) {
-        tracks = await initTracks();
-      }
-      // Join a channel
-      const uid = await client.join(APP_ID, meetingName, TOKEN, null);
-      setLocalUid(uid);
-      await client.publish(tracks);
-      setInformationMessage({
-        title: meetingName,
-        message:getMeetingURL({
-          appId: APP_ID,
-          meeting: meetingName,
-          token: TOKEN,
-        }),
-        type: "joinMeeting",
-      });
-      setJoined(true);
-    setShowInformationMessage(true);
-    } catch (error) {
-      console.error(error);
-    }
+  const handelJoinMeetingAsHost = () => {
+    handelMeetingStep(3);
+    setQueryString({ meeting: meetingName });
   };
   const handelLeaveMeeting = async () => {
-    audioTrack?.close();
-    setAudioTrack(null);
-    videoTrack?.close();
-    setVideoTrack(null);
-    setRemoteUsers({});
-    await client?.leave();
-    // leave the channel
-    setJoined(false);
-    const msg = "client leaves channel success!";
-    // message.success(msg);
+    setJoined(false)
+    // window.location.href = '/'
   };
+
   useEffect(() => {
-    const initMeeting = async () => {
-      if (!meetingName) {
-        return;
-      }
-      try {
-        let tracks = await initTracks();
-        if (tracks) {
-          handelJoinMeeting();
-        }
-      } catch (error) {
-        if (
-          error.name === "AgoraRTCException" &&
-          error.message.includes("PERMISSION_DENIED")
-        ) {
-          setInformationMessage({
-            title: "Permission Denied",
-            message:
-              "To join the meeting, please grant permission for your camera and microphone.",
-            icon: "error",
-            isLoader: true,
-            type: "normal",
-          });
-          setShowInformationMessage(true);
-        }
-      }
-    };
-    initMeeting();
-  }, [meetingName]);
+    if (sharedMeetingName) {
+      setMeetingName(sharedMeetingName);
+      setIsSharedMeeting(true);
+    }
+  }, []);
+  useUnMount(() => {
+    if (joined) {
+      handelLeaveMeeting();
+    }
+  });
+  useEffect(() => {
+    if (meetingName && isSharedMeeting) {
+      handelMeetingStep(3);
+    } else if (meetingName && !isSharedMeeting) {
+      toast.success(success.meetingCreated.title)
+      handelMeetingStep(2);
+    } else {
+      handelMeetingStep(1);
+    }
+  }, [meetingName, setMeetingStep]);
+  useEffect(() => {
+    if (meetingStep === 3) {
+      initMeeting();
+    }
+  }, [meetingStep]);
+
   return (
     <VideoCallContext.Provider
       value={{
-        initTracks,
-        handelJoinMeeting,
-        handelLeaveMeeting,
-        setJoined,
+        joined,
+        meetingName,
+        meetingStep,
         setMeetingName,
+        setIsSharedMeeting,
+        getMeetingURL,
+        handelMeetingStep,
+        sharedMeetingName,
+        handelJoinMeetingAsHost,
+        handelLeaveMeeting,
+        rtcProps,
+        rtmProps
       }}
     >
       {children}

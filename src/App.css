@@ -1,6 +1,98 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import url("https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
 .error-msg{
   color: #BF0000;  
   font-size: 12px;
+  font-weight: 600;
+}
+
+body{
+  background: #efefef;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.card-wrapper{
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 550px !important;
+  margin: auto;
+}
+
+.card-wrapper .card{
+  width: 100%;
+  padding: 30px 20px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border: none;
+}
+
+.card-wrapper .card .form-control {
+  height: 45px;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+.card-wrapper .card  button.btn {
+  display: block;
+  margin: 10px 0 0;
+  border-radius: 5px !important;
+}
+
+.card-wrapper .card .copy-section {
+  padding: 5px 10px;
+  background: #efefef;
+  border-radius: 5px;
+  display: flex;
+  margin: 15px 0;
+}
+
+.card-wrapper .card .copy-section input{
+  border: none;
+  background: transparent;
+  color: #000;
+  font-weight: 600;
+  flex: 1;
+  font-size: 12px;
+}
+
+.card-wrapper .card .copy-section button, .card-wrapper .card .copy-section button:focus{
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+span.success_text {
+  text-align: center;
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+
+#gallery {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: calc(var(--width) * var(--cols));
+  --width:inherit;
+  --height:inherit;
+  --cols:inherit
+}
+
+#gallery .video-container {
+  width: var(--width);
+  height: var(--height);
+  background-color: #3a3a3e;
+}
+
+#gallery .video-container video {
+  height: 100%;
+  width: 100%;
 }

@@ -11,19 +11,8 @@ export const createCameraVideoTrack = async (options = {}) => {
   return AgoraRTC.createCameraVideoTrack(options);
 };
 
-export const getMeetingURL = (options) => {
-  const href = window.location.href.split("?")[0];
-  const url = `${href}?appId=${options.appId}&meeting=${options.meeting}&token=${options.token}`;
-  const node = (
-    <span>
-      You can invite others join this meeting by sharing below url.{" "}
-      <a href={url} target="_blank" rel="noreferrer">
-        here
-      </a>
-    </span>
-  );
-  return node;
-};
+
+
 export const getColor = () => {
   const r = Math.floor(Math.random() * 255);
   const g = Math.floor(Math.random() * 255);

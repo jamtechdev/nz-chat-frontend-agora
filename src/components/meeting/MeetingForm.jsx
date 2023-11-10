@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useVideoCallContext } from "../../_contexts/VideoCallContext";
-
 const CreateMeetingForm = () => {
   const validationSchema = Yup.object().shape({
     meetingName: Yup.string()
@@ -13,11 +12,10 @@ const CreateMeetingForm = () => {
       .min(5, "Meeting name is too short - should be 5 chars minimum.")
       .max(30, "Meeting name is too large - should be 30 chars maximum.")
       .matches(
-        /^[A-Za-z][A-Za-z\s]*$/,
-        "Meeting name can only contain Latin letters and space ."
+        /^[A-Za-z0-9_\s]*$/,
+        "Meeting name can only contain Latin letters,numbers and space _ ."
       ),
   });
-
   const formOptions = { resolver: yupResolver(validationSchema) };
   const { register, handleSubmit, formState } = useForm(formOptions);
   const { errors } = formState;
@@ -25,20 +23,16 @@ const CreateMeetingForm = () => {
   const onSubmit = async ({ meetingName }) => {
     setMeetingName(meetingName);
   };
-
- 
-
   return (
     <>
+      <div className="card-wrapper">
       <Card>
         <Card.Body>
-          <Card.Title>Create a meeting</Card.Title>
+          <Card.Title>{"Create a meeting"}</Card.Title>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Form.Group className="mb-3">
-              <Form.Label>Meeting Name</Form.Label>
               <Form.Control
                 {...register("meetingName")}
-                defaultValue=""
                 type="text"
                 placeholder="Enter your Meeting Name"
               />
@@ -47,11 +41,12 @@ const CreateMeetingForm = () => {
               </Form.Text>
             </Form.Group>
             <Button type="submit" variant="success">
-              <i className="ri-video-chat-line"></i> Start Meeting
+              <i className="ri-video-chat-line"></i> Next
             </Button>
           </Form>
         </Card.Body>
       </Card>
+      </div>
     </>
   );
 };

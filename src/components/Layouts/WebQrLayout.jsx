@@ -14,19 +14,28 @@ export default function WebQrLayout() {
     const navigate = useNavigate();
     const { webSocket, setSocketConnection, disconnectSocket } = useWebSocketContext();
     const dispatch = useDispatch();
-    const { isAuthenticated, loading } = useSelector(state=>state.user)
+    const { isAuthenticated, loading } = useSelector(state => state.user)
 
 
     useEffect(() => {
-        if (!isAuthenticated && !loading){
-            let interval = setTimeout(()=>{
-                if (!isAuthenticated)
+        let interval = setTimeout(() => {
+            if (!isAuthenticated)
                 setSocketConnection();
-            },5000)
-            return()=>clearTimeout(interval)
-        }
-        
-      }, [loading]);
+        }, 1000)
+        return () => clearTimeout(interval)
+    }, []);
+
+
+    // useEffect(() => {
+    //     if (!isAuthenticated && !loading){
+    //         let interval = setTimeout(()=>{
+    //             if (!isAuthenticated)
+    //             setSocketConnection();
+    //         },1000)
+    //         return()=>clearTimeout(interval)
+    //     }
+
+    //   }, [loading]);
 
 
 
@@ -135,10 +144,10 @@ export default function WebQrLayout() {
 
     useEffect(() => {
         // console.log('get');
-        if(webSocket){
-        initWebSocket()
-    
-        return(()=>disconnectSocket());
+        if (webSocket) {
+            initWebSocket()
+
+            return (() => disconnectSocket());
         }
     }, [webSocket]);
 

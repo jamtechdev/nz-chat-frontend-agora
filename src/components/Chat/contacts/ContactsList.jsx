@@ -3,11 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getContacts, getGroups } from '../../../_utils/firebase';
 import Contact from './Contact';
 import Group from './Group';
+import ContactSkeleton from './ContactSkeleton';
 
-const ContactsList = ({displayUsers}) => {
+const ContactsList = ({ displayUsers }) => {
 
     const [userContacts, setUserContacts] = useState([]);
     const [userGroups, setUserGroups] = useState([]);
+
+    const [contactLoading, setContactLoading] = useState(true);
+
     const identifier = localStorage.getItem("sessionIdentifier");
     const dispatch = useDispatch();
     const { uid, name, photo, status } = useSelector(state => state.user);
@@ -17,9 +21,11 @@ const ContactsList = ({displayUsers}) => {
             .then((contacts) => {
                 // console.log(contacts);
                 setUserContacts([...contacts]);
+                setContactLoading(false);
             })
             .catch((error) => {
                 console.error('Error:', error);
+                setContactLoading(false);
             });
         getGroups(uid)
             .then((groups) => {
@@ -30,14 +36,25 @@ const ContactsList = ({displayUsers}) => {
                 console.error('Error:', error);
             });
 
-
     }, []);
-    
+
     return (
         <div className="chat-list">
             {/* {console.log(userContacts)} */}
-           
-            {displayUsers?.map((contact) => (
+
+            {contactLoading && (
+                <>
+                    <ContactSkeleton />
+                    <ContactSkeleton />
+                    <ContactSkeleton />
+                    <ContactSkeleton />
+                    <ContactSkeleton />
+                    <ContactSkeleton />
+                    <ContactSkeleton />
+                </>
+            )}
+
+            {!contactLoading && displayUsers?.map((contact) => (
                 <Fragment key={contact.userId} >
                     <Contact
                         userId={contact.userId}
@@ -46,7 +63,8 @@ const ContactsList = ({displayUsers}) => {
                     />
                 </Fragment>
             ))}
-            {userGroups.map((group) => (
+
+            {!contactLoading && userGroups.map((group) => (
                 <Fragment key={group.key}>
                     <Group
                         groupId={group.key}

@@ -96,3 +96,11 @@ span.success_text {
   height: 100%;
   width: 100%;
 }
+
+
+.loader-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Adjust this based on your layout */
+}

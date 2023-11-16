@@ -17,10 +17,10 @@ const routes = [
     path: "/",
     element: <MainLayout><Home /></MainLayout>,
   },
-  {
-    path: "/meeting",
-    element: <MessengerLayout><Meeting /></MessengerLayout>,
-  }
+  // {
+  //   path: "/meeting",
+  //   element: <MessengerLayout><Meeting /></MessengerLayout>,
+  // }
 ];
 
 export default routes;

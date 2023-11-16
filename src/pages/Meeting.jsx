@@ -16,6 +16,7 @@ const Meeting = () => {
     rtmProps
   } = useVideoCallContext();
   console.log(rtcProps)
+  // console.log("----------------------------------------------------------joined")
   return (
     <>
       {meetingStep === 1 && !sharedMeetingName && !meetingName && (

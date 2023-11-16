@@ -11,7 +11,7 @@ const Group = ({groupId, groupDetails}) => {
         let currentChatObj = {
             userId : groupId,
             name : groupDetails.name,
-            photo : groupDetails.photo,
+            photo : groupDetails?.photo,
             userType : "group"
         }
         // console.log(currentChatObj)
@@ -22,7 +22,7 @@ const Group = ({groupId, groupDetails}) => {
             <div className="img-box">
                 <img
                     className="img-cover"
-                    src={groupDetails.photo} 
+                    src={groupDetails?.photo} 
                     alt=""
                 />
             </div>

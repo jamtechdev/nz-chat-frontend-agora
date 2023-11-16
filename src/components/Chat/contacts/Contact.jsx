@@ -9,8 +9,8 @@ const Contact = ({ userId, userDetails, latestMessage }) => {
     const openUserChat = (userId, userDetails) => {
         let currentChatObj = {
             userId : userId,
-            name : userDetails.name,
-            photo : userDetails.photo,
+            name : userDetails?.name || "",
+            photo : userDetails?.photo || "",
             userType : "user"
         }
         dispatch(setCurrentChat(currentChatObj));
@@ -21,13 +21,13 @@ const Contact = ({ userId, userDetails, latestMessage }) => {
             <div className="img-box">
                 <img
                     className="img-cover"
-                    src={userDetails.photo}
+                    src={userDetails?.photo}
                     alt=""
                 />
             </div>
             <div className="chat-details">
                 <div className="text-head">
-                    <h4>{userDetails.name}</h4>
+                    <h4>{userDetails?.name}</h4>
                     {/* <p className="time unread">11:49</p> */}
                     <p className="time unread">{convertTimestamp(latestMessage.timestamp)}</p>
                 </div>

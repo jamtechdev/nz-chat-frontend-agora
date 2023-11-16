@@ -17,6 +17,8 @@ export const getAuthenticated = identifier => async dispatch => {
         dispatch({ type: 'authSuccess', payload: data });
     } catch (error) {
         // localStorage.clear();
+        
+        console.log(error)
         dispatch({ type: 'authFailure', payload: error.message });
     }
 }

@@ -15,9 +15,10 @@ import { useUnMount } from "../_hooks";
 import { nanoid } from "nanoid";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { joinMeeting } from "../_utils/services";
 export const VideoCallContext = createContext();
 export default function VideoCallProvider({ children }) {
-  const { name} = useSelector(state => state.user)
+  const {uid, name} = useSelector(state => state.user)
   const navigate = useNavigate();
   const Alert = withReactContent(Swal);
   const APP_ID = "fe59ad8be52e430eaacc2da8f60d3cac";
@@ -35,11 +36,23 @@ export default function VideoCallProvider({ children }) {
   };
   const initMeeting = async () => {
     try {
+      const res = await joinMeeting(meetingName,
+        {
+        "inMeetingRoom":true,
+        // "joinId":3075173654,
+        "muteCamera":true,
+        "muteSpeaker":true,
+        "profileName":name,
+        "uid":uid
+        }
+        )
+        // console.log("---------------------------------------------res",res);
       setRtcProps({
         appId: APP_ID,
         channel: meetingName,
         token: TOKEN,
         role: 'host',
+        // role: res.userRole || 'host',
         layout: layout.grid,
         enableScreensharing: true
       })
@@ -47,6 +60,7 @@ export default function VideoCallProvider({ children }) {
       setJoined(true)
     } catch (error) {
       console.log("Error: initMeeting", error);
+      navigate("/chat")
     }
   };
   const getMeetingURL = () => {

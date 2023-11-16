@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useVideoCallContext } from "../../_contexts/VideoCallContext";
 import { useSelector } from "react-redux";
-import { createMetting } from "../../_utils/services";
+import { createMetting } from "../../_services";
 
 const CreateMeetingForm = () => {
   const { uid, name } = useSelector(state => state.user)

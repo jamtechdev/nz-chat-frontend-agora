@@ -15,7 +15,7 @@ import { useUnMount } from "../_hooks";
 import { nanoid } from "nanoid";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { joinMeeting } from "../_utils/services";
+import { joinMeeting } from "../_services";
 export const VideoCallContext = createContext();
 export default function VideoCallProvider({ children }) {
   const {uid, name} = useSelector(state => state.user)

@@ -1,5 +1,5 @@
 import React from 'react'
-import { convertTimestamp } from '../../../_utils/helper'
+import { convertTimestamp } from '../../../_utils'
 import { useDispatch } from 'react-redux';
 import { setCurrentChat } from '../../../redux/actions/user';
 
